@@ -1,0 +1,37 @@
+---
+title: "Introduction to Linear Regression"
+author: "Christina Knudson & Lisa Lendway"
+output:
+  html_document:
+    theme: sandstone
+    df_print: paged
+    keep_md: true
+    toc: true
+    toc_float: true
+    toc_depth: 1
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r}
+library(tidyverse) #used for visualization, summarization, and basic wrangling
+library(broom) #used for "prettier" and easier to work with model output
+library(fivethirtyeight) #datasets
+```
+
+
+# Data Visualization
+
+
+# Simple Linear Regression (SLR): Creating models, interpreting models, point prediction
+
+
+# Hypothesis test for SLR
+
+
+# Multiple Linear Regression: Creating models, interpreting models, point prediction
+
+
+# Comparing models using basic model selection techniques
