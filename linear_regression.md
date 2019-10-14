@@ -11,11 +11,10 @@ output:
     toc_depth: 1
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(message=FALSE)
-```
 
-```{r libraries, message=FALSE, warning=FALSE}
+
+
+```r
 library(tidyverse) #used for visualization, summarization, and basic wrangling
 library(broom) #used for "prettier" and easier to work with model output
 library(fivethirtyeight) #datasets
@@ -47,9 +46,34 @@ Then you load the library by running a `library()` statement as shown above. You
 
 Once you have done that, we can begin exploring the data. We will use the `mpg` data throughout. Before we get started, take a moment to explore that data and see what is there.
 
-```{r}
+
+```r
 data(mpg)
 summary(mpg)
+```
+
+```
+##  manufacturer          model               displ            year     
+##  Length:234         Length:234         Min.   :1.600   Min.   :1999  
+##  Class :character   Class :character   1st Qu.:2.400   1st Qu.:1999  
+##  Mode  :character   Mode  :character   Median :3.300   Median :2004  
+##                                        Mean   :3.472   Mean   :2004  
+##                                        3rd Qu.:4.600   3rd Qu.:2008  
+##                                        Max.   :7.000   Max.   :2008  
+##       cyl           trans               drv                 cty       
+##  Min.   :4.000   Length:234         Length:234         Min.   : 9.00  
+##  1st Qu.:4.000   Class :character   Class :character   1st Qu.:14.00  
+##  Median :6.000   Mode  :character   Mode  :character   Median :17.00  
+##  Mean   :5.889                                         Mean   :16.86  
+##  3rd Qu.:8.000                                         3rd Qu.:19.00  
+##  Max.   :8.000                                         Max.   :35.00  
+##       hwy             fl               class          
+##  Min.   :12.00   Length:234         Length:234        
+##  1st Qu.:18.00   Class :character   Class :character  
+##  Median :24.00   Mode  :character   Mode  :character  
+##  Mean   :23.44                                        
+##  3rd Qu.:27.00                                        
+##  Max.   :44.00
 ```
 
 
@@ -71,25 +95,32 @@ We will often talk about the *distribution* of a variable. This is the values th
 
 Histograms are constructed by (1) dividing up the observed range of the variable into "bins" of equal width and (2) counting up the number of cases that fall into each bin. Try out the code below. Notice a couple things. First, it has removed missing values. Second, it's telling you that it has chosen the number of bins for you: 30. 
 
-```{r}
+
+```r
 ggplot(data = mpg) +
   geom_histogram(aes(x = hwy))
 ```
 
+![](linear_regression_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
 We can customize plots in various ways, like I did below, but the most important part is creating a plot that allows us to see the distribution of our variable of interest, `hwy` in this case.  
 
-```{r}
+
+```r
 ggplot(data = mpg) +
   geom_histogram(aes(x = hwy), bins = 20, fill = "lightblue") +
   labs(x = "Highway MPG", y = "Number of vehicles") +
   theme_minimal() 
 ```
 
+![](linear_regression_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
 ### Measures of Center and Spread
 
 Numerical measures of the center and spread can help us better understand the distribution of a quantitative variable. Try the following code to compute the mean, median, standard deviation (SD), and IQR of `hwy`. With these additional statistics, how would you describe the distribution of `hwy`?
 
-```{r}
+
+```r
 mpg %>%
   summarize(
     mean_hwy = mean(hwy),
@@ -98,6 +129,12 @@ mpg %>%
     IQR_hwy = IQR(hwy)
   )
 ```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["mean_hwy"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["median_hwy"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["sd_hwy"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["IQR_hwy"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"23.44017","2":"24","3":"5.954643","4":"9"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 
 ### YOUR TURN (have a problem for them to try on their own)
@@ -130,19 +167,29 @@ Examine the following plot that shows the relationshiop between `hwy` and `displ
 * the direction of the relationship (positive/negative)
 * outliers 
 
-```{r}
+
+```r
 ggplot(data = mpg) +
   geom_point(aes(x = displ, y = hwy)) +
   labs(x = "Engine Displacement", y = "Highway MPG") +
   theme_minimal()
 ```
 
+![](linear_regression_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
 The strength of the *linear* relationship between two quantitative variables is measured by the **correlation coefficient**. The code below will compute this.
 
-```{r}
+
+```r
 mpg %>% 
   summarize(corr = cor(displ, hwy))
 ```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["corr"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.76602"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 
 ### YOUR TURN!!
