@@ -253,7 +253,13 @@ The model has two main uses:
 
 2. Explanation: to explain the relationship between the explanatory variables and the response variable, ie. how $y$ relates to each of $x_1$, $x_2$, ...,$x_p$. The coefficients ($\hat{\beta}_1$, $\hat{\beta}_2$, ..., $\hat{\beta}_p$) tell us about that. 
 
-We will use the `lm` function (which stands for linear model) to fit models. This function requires two arguments: the model equation and the data. The model equation is written in the form `y ~ x1 + x2`, where `y` is the response and `x1` and `x2` are the explanatory variables. More variables can be added by using the `+` sign to separate them. 
+We will use the `lm` function (which stands for linear model) to fit models. This function requires two arguments: the model equation and the data. The model equation is written in the form `y ~ x1 + x2`, where `y` is the response and `x1` and `x2` are the explanatory variables. More variables can be added by using the `+` sign to separate them. Here is a generic example
+
+```{r, eval=FALSE}
+lm(y ~ x1 + x2, data=the_data)
+```
+
+## Linear regression with one quantitative explanatory variable
 
 Let's look at an example.
 
@@ -275,7 +281,138 @@ We can obtain more output (which we'll want when we start doing inference), usin
 tidy(lm_displ)
 ```
 
-For now, we are just interested in the *term* and *estimate* columns. The *term* column is the term in the model equation. The column titled *estimate* gives the estimated coefficients of the variables/terms (ie. the $\hat{\beta}$s. 
+For now, we are just interested in the *term* and *estimate* columns. The *term* column is the term/variable in the model equation. The column titled *estimate* gives the estimated coefficients of the variables/terms (ie. the $\hat{\beta}$s. 
+
+We could write out the equation above as:
+
+$$
+\hat{hwy} = 35.70 - 3.53 displ
+$$
+
+### Explanation
+
+1. How do you interpret the intercept, 35.70?  
+2. How do you interpret the slope, -3.53?
+
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
+In general, in a simple linear regression (ie. one explanatory variable), the intercept is the *average* response when the explanatory variable(s) is equal to zero. The slope is the *average* change in the response variable for a one unit increase in the explanatory variable. 
+
+### Prediction
+
+How would you find the predicted highway miles per gallon for a vehicle with an engine displacement of 4.5 litres?
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
+We can use the `augment()` function to help us do this, too.
+
+We an use it to find the predicted responses for all the data used to fit this model:
+
+```{r}
+augment(lm_displ)
+```
+
+This dataset contains the response variable, all explanatory variables, and some additional information. One piece of additional information is the variable *.fitted*. These are the predicted (fitted) values. 
+
+Sometimes we want all the variables in our original dataset, plus these new variables. We can get that, by adding a `data = ` argument to the `augment()` function. 
+
+```{r}
+augment(lm_displ, data = mpg)
+```
+
+We can also use `augment() ` to predict unknown or future values, like predicting the highway MPG for a displacement of 4.5. We need to add a `newdata = ` argument to the function and give it a dataset as an argument. Because there is just one value, we can create the dataset "on the fly." The `tibble()` function can be used to create a dataset. If we wanted multiple predictions, we separate them with commas inside the `c()`. Be sure the variable is named EXACTLY as the variable name appears in the original dataset.
+
+```{r}
+augment(lm_displ, 
+        newdata = tibble(displ = c(4.5)))
+
+#example of more than one prediction
+augment(lm_displ, 
+        newdata = tibble(displ = c(3, 3.5, 4.0, 4.5, 5.0, 5.5)))
+```
+
+We can also use this to plot our fitted line on the plot of the original data.
+
+```{r}
+#The pipe, %>%, allows us to pass data to the next function. It is read, "and then."
+augment(lm_displ, data = mpg) %>% 
+  ggplot() +
+  geom_jitter(aes(x = displ, y = hwy)) + 
+  geom_line(aes(x = displ, y = .fitted), color = "blue") + #the fitted line
+  labs(x = "Engine Displacement", y = "Highway MPG") +
+  theme_minimal()
+```
+
+## Linear regression with one categorical (factor) variable
+
+Now, let's examine a model that uses a categorical (factor) explanatory variable. We try just putting it in the model:
+
+```{r}
+lm_drv <- lm(hwy ~ drv,
+                 data=mpg)
+tidy(lm_drv)
+```
+
+It did something. **WHAT did it do? Any ideas?** First, let's run the following code. How is what we see below related to what we see above?
+
+```{r}
+mpg %>% 
+  group_by(drv) %>% 
+  summarize(mean_hwy = mean(hwy))
+```
+
+Since R cannot use *drv* directly, since its values are words not numbers, it is creating 2 new variables: 
+
+*drvf* is 1 if *drv* is *f* and 0 otherwise, and 
+*drvr*  is 1 if *drv* is *r* and 0 otherwise.  
+
+Let's write out the model equation:
+
+$$
+\hat{hwy} = 19.18 + 8.99drvf + 1.83drvr
+$$
+
+**QUESTIONS**
+
+1. What values does the *drvf* variable take? When?  
+2. What values does the *drvr* variable take? When?  
+3. When will both *drvf* and *drvr* take a value of 0?  
+4. What is the predicted value for a front wheel drive vehicle?  
+5. What is the predicted value for a rear wheel drive vehicle?
+6. What is the predicted value for a 4 wheel drive vehicle? 
+7. Interpret each of the coeffients.
 
 
 # Hypothesis test for SLR
