@@ -16,6 +16,7 @@ output:
 
 ```r
 library(tidyverse) #used for visualization, summarization, and basic wrangling
+library(ggridges) #used for making density ridge plots
 library(broom) #used for "prettier" and easier to work with model output
 library(fivethirtyeight) #datasets
 ```
@@ -196,15 +197,174 @@ mpg %>%
 
 ### More complex scatterplots
 
-Jitter or alpha to unhide points, making size smaller with large datasets
-
-Color or facet
+We can jitter the points, adding a little bit of noise to each point, in order to see if they are overplotted. Do you prefer this plot?
 
 
+```r
+ggplot(data = mpg) +
+  geom_jitter(aes(x = displ, y = hwy)) + #noice the code change here
+  labs(x = "Engine Displacement", y = "Highway MPG") +
+  theme_minimal()
+```
+
+![](linear_regression_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+We can add an `alpha` argument, which controls the transparency of points. This can help if points are overplotted or if there is an overwhelming amount of data. 
+
+
+```r
+ggplot(data = mpg) +
+  geom_point(aes(x = displ, y = hwy), alpha = .2) +
+  labs(x = "Engine Displacement", y = "Highway MPG") +
+  theme_minimal()
+```
+
+![](linear_regression_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+We can make the points smaller in size. This can also help when there is a large amount of data. 
+
+
+```r
+ggplot(data = mpg) +
+  geom_point(aes(x = displ, y = hwy), size = .5) +
+  labs(x = "Engine Displacement", y = "Highway MPG") +
+  theme_minimal()
+```
+
+![](linear_regression_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
+Sometimes you may want to use a combination of these options
+
+
+```r
+ggplot(data = diamonds) +
+  geom_jitter(aes(x = carat, y = price), alpha = .2, size = .5) +
+  labs(x = "Carats", y = "Price ($)") +
+  theme_minimal()
+```
+
+![](linear_regression_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+We also might be interested in the affect of a third variable while still wanting to look at the relationship between the two quantitative variables. If the third variable is categorical, we have a couple options. 
+
+We can color the points by that variable.
+
+
+```r
+ggplot(data = mpg) +
+  geom_jitter(aes(x = displ, y = hwy, color = drv)) +
+  labs(x = "Engine Displacement", y = "Highway MPG", color = "Drive") +
+  theme_minimal()
+```
+
+![](linear_regression_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+
+Or we can facet by that variable.
+
+
+```r
+ggplot(data = mpg) +
+  geom_jitter(aes(x = displ, y = hwy)) +
+  facet_wrap(vars(drv)) +
+  labs(x = "Engine Displacement", y = "Highway MPG") +
+  theme_minimal()
+```
+
+![](linear_regression_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+
+### Quantitative vs. categorical: side-by-side boxplots and density "ridge" plots
+
+Examine the side-by-side boxplot below. What are some observations you would make?
+
+
+```r
+ggplot(data = mpg) +
+  geom_boxplot(aes(x = drv, y = hwy)) +
+  labs(x = "Drive", y = "Highway MPG") +
+  theme_minimal()
+```
+
+![](linear_regression_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
+We could also examine this relationship using densiy plots. Notice that the x and y axis are the opposite of what they were in the boxplot. What do you observe here? Anything you didn't observe in the boxplot?
+
+
+```r
+ggplot(data = mpg) +
+  geom_density_ridges(aes(x = hwy, y = drv)) +
+  labs(x = "Highway MPG", y = "Drive") +
+  theme_minimal()
+```
+
+![](linear_regression_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+### Your turn! 
 
 # Simple Linear Regression (SLR): Creating models, interpreting models, point prediction
 
+We are going to discuss different types of linear models, their notation in R, how to interpret the model coefficients, and how to use them for prediction.
 
+What does it mean to fit a model to data? We are looking for a mathematical equation to represent the "general" relationship between a *response variable* and *explanatory variables*. We know it won't be perfect, but we would like something useful. In this course, we focus on linear models. They take the form:
+
+$$
+\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x_1 + \hat{\beta}_2 x_2 + ... + \hat{\beta}_p x_p.
+$$
+
+The "hats" on top of the $y$ and the $\beta$s are to indicate that those quantities are estimates obtained from data. The $\beta$s will be numbers. The above is just a more complex version of the traditional equation of a line:
+
+$$
+y = mx + b
+$$
+
+The resulting model equation has many different names: model equation (or specifically linear model equation or just model), fitted model, least squares regression line, multiple regression line, estimated line, etc. These all mean the same thing.
+
+The model has two main uses:
+
+1. Prediction: to find the *predicted value* (also called *predicted response*, *fitted value*, *model value*, and a few other things) which is the value the response variable takes when you plug in the values of the explanatory variables. Or to predict values of $y$ when it is unknown.
+
+2. Explanation: to explain the relationship between the explanatory variables and the response variable, ie. how $y$ relates to each of $x_1$, $x_2$, ...,$x_p$. The coefficients ($\hat{\beta}_1$, $\hat{\beta}_2$, ..., $\hat{\beta}_p$) tell us about that. 
+
+We will use the `lm` function (which stands for linear model) to fit models. This function requires two arguments: the model equation and the data. The model equation is written in the form `y ~ x1 + x2`, where `y` is the response and `x1` and `x2` are the explanatory variables. More variables can be added by using the `+` sign to separate them. 
+
+Let's look at an example.
+
+
+```r
+lm_displ <- lm(hwy ~ displ, data=mpg)
+
+lm_displ
+```
+
+```
+## 
+## Call:
+## lm(formula = hwy ~ displ, data = mpg)
+## 
+## Coefficients:
+## (Intercept)        displ  
+##      35.698       -3.531
+```
+
+Notice a couple things:
+
+1. I have saved this model to an object named `lm_displ`.  
+2. The output gives us the intercept, $\hat{\beta}_0$ and the slope  or coefficient for the `displ` term, $\hat{\beta}_1$.
+
+
+We can obtain more output (which we'll want when we start doing inference), using the `tidy()` function.
+
+
+```r
+tidy(lm_displ)
+```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["std.error"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["statistic"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"(Intercept)","2":"35.697651","3":"0.7203676","4":"49.55477","5":"2.123519e-125"},{"1":"displ","2":"-3.530589","3":"0.1945137","4":"-18.15085","5":"2.038974e-46"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
+For now, we are just interested in the *term* and *estimate* columns. The *term* column is the term in the model equation. The column titled *estimate* gives the estimated coefficients of the variables/terms (ie. the $\hat{\beta}$s. 
 
 
 # Hypothesis test for SLR
