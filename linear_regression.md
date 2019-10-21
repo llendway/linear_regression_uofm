@@ -24,7 +24,7 @@ library(fivethirtyeight) #datasets
 
 # Data Visualization
 
-Usually one of the first things we want to do with new data is visualize it. If you haven't wanted to do this in the past, you'll want to do it now because it's going to be so easy! We will use functions from a package called `ggplot2` to create  our visualizations. This package is based on a visualization framework called the ["Grammar of Graphics"](https://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448). We will ony discuss a few key details of the framework: data, geometric objects, and aesthetic attributes. The main idea is that "A statistical graphic is a mapping of data variables to aesthetic attributes of geometric objects."
+Usually one of the first things we want to do with new data is visualize it. If you haven't wanted to do this in the past, you'll want to do it now because it's going to be so easy! We will use functions from a package called `ggplot2` to create  our visualizations. This package is based on a visualization framework called the ["Grammar of Graphics"](https://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448). We will only discuss a few key details of the framework: data, geometric objects, and aesthetic attributes. The main idea is that "A statistical graphic is a mapping of data variables to aesthetic attributes of geometric objects."
 
 1. Data: Our data set that contains variables (the columns) with many observations (the rows).  
 2. Geometric objects: What we observe on our plot - points, lines, bars, etc. 
@@ -161,7 +161,7 @@ Our goal is to construct visualizations that allow us to examine the following f
 
 ### Quantitative vs. quantitative: scatterplots
 
-Examine the following plot that shows the relationshiop between `hwy` and `displ` (engine displacement). Comment on:
+Examine the following plot that shows the relationship between `hwy` and `displ` (engine displacement). Comment on:
         
 * the form of the relationship (line/curve/other)
 * the strength of the relationship (weak/moderate/strong)
@@ -286,7 +286,7 @@ ggplot(data = mpg) +
 
 ![](linear_regression_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
-We could also examine this relationship using densiy plots. Notice that the x and y axis are the opposite of what they were in the boxplot. What do you observe here? Anything you didn't observe in the boxplot?
+We could also examine this relationship using density plots. Notice that the x and y axis are the opposite of what they were in the boxplot. What do you observe here? Anything you didn't observe in the boxplot?
 
 
 ```r
@@ -403,7 +403,7 @@ $$
 \
 \
 
-In general, in a simple linear regression (ie. one explanatory variable), the intercept is the *average* response when the explanatory variable(s) is equal to zero. The slope is the *average* change in the response variable for a one unit increase in the explanatory variable. 
+In general, in a simple linear regression with one quantitative explanatory variable, the intercept is the *average* response when the explanatory variable(s) is equal to zero. The slope is the *average* change in the response variable for a one unit increase in the explanatory variable. 
 
 ### Prediction
 
@@ -499,7 +499,7 @@ augment(lm_displ, data = mpg) %>%
 
 ## Linear regression with one categorical (factor) variable
 
-Now, let's examine a model that uses a categorical (factor) explanatory variable. We try just putting it in the model:
+Now, let's examine a model that uses a categorical (factor) explanatory variable. 
 
 
 ```r
@@ -542,19 +542,57 @@ $$
 
 **QUESTIONS**
 
-1. What values does the *drvf* variable take? When?  
-2. What values does the *drvr* variable take? When?  
-3. When will both *drvf* and *drvr* take a value of 0?  
-4. What is the predicted value for a front wheel drive vehicle?  
-5. What is the predicted value for a rear wheel drive vehicle?
-6. What is the predicted value for a 4 wheel drive vehicle? 
-7. Interpret each of the coeffients.
+1. When will both *drvf* and *drvr* take a value of 0?  
+2. What is the predicted value for a front wheel drive vehicle?  
+3. What is the predicted value for a rear wheel drive vehicle?
+4. What is the predicted value for a 4 wheel drive vehicle? 
+5. Interpret each of the coefficients.
+
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
+In general, in a simple linear regression with one categorical explanatory variable, the intercept is the *average* response when the explanatory variable is at the "baseline" or "reference" level. That is the level of the categorical variable that does not have a dummy variable created for it. Notice, that is also the average response when all other variables are zero, same as when we had one quantitative explanatory variable. 
+
+The other coefficients are the difference in average response between the level of the indicator variable and the reference level. This is similar to "increasing the explanatory variable by one," but it doesn't really make sense to talk about it that way.
+
+### Your turn!
 
 
 # Hypothesis test for SLR
 
 
 # Multiple Linear Regression: Creating models, interpreting models, point prediction
+
+Often, we think more than one variable affects the response. We can include more than one variable in our model. We do that here, using both *drv* and *displ* to explain *hwy*. 
+
+
+```r
+lm_twovars <- lm(hwy ~ drv + displ,
+                 data=mpg)
+tidy(lm_twovars)
+```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["std.error"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["statistic"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"(Intercept)","2":"30.825437","3":"0.9239025","4":"33.364382","5":"4.209158e-90"},{"1":"drvf","2":"4.790598","3":"0.5296223","4":"9.045310","5":"6.399425e-17"},{"1":"drvr","2":"5.257865","3":"0.7335844","4":"7.167362","5":"1.031418e-11"},{"1":"displ","2":"-2.914085","3":"0.2182513","4":"-13.351970","5":"1.726916e-30"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
 
 
 # Comparing models using basic model selection techniques
