@@ -450,6 +450,152 @@ lm_twovars <- lm(hwy ~ drv + displ,
 tidy(lm_twovars)
 ```
 
+**Questions:**
+
+1. Have the coefficients in the model changed from the model with only *displ* or the model with only *drv*?  
+2. Why do you think they have changed or not changed?
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
+In a model with more than one variable, we are determining the affect of each variable, while accounting for all other variables in the model. This affect might change after accounting for those other variables. Let's examine this visually first with this toy example.
+
+```{r}
+set.seed(10)
+
+x1 <- runif(n = 10, min = 0, max = 10)
+y1 <- 5 + rnorm(n = 10, mean = 0, sd = 2)
+
+x2 <- runif(n = 10, min = 10, max = 20)
+y2 <- 15 + rnorm(n = 10, mean = 0, sd = 2)
+
+x3 <- runif(n = 10, min = 20, max = 30)
+y3 <- 25 + rnorm(n = 10, mean = 0, sd = 2)
+
+test_data <- tibble(x = c(x1, x2, x3),
+                    y = c(y1, y2, y3),
+                    grp = c(rep("a", 10), rep("b", 10), rep("c", 10)))
+
+ggplot(test_data) +
+  geom_point(aes(x = x, y = y, color = grp)) +
+  theme_minimal()
+```
+
+**Questions:**
+
+1. How would you describe the relationship between *x* and *y* if you don't pay attention to *grp*?  
+2. Is the relationship between *x* and *y* within each *grp* different than the overall relationship? What might you expect the coefficient of the *x* term to be in a linear regression that includes both *x* and *grp* in the model of *y*?
+
+
+## Explanation
+
+Let's return to the model output. 
+
+```{r}
+tidy(lm_twovars)
+```
+
+Given what we just discussed, try interpreting each of the estimated coefficients from the model on your own. 
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
+In general, in a multiple linear regression model, the intercept is the *average* response when the explanatory variables are all equal to zero. If there are categorical variables in the model, the intercept then reflects when all of those are at the baseline/reference level. 
+
+Coefficients of quantitative explanatory variables are the *average* change in the response variable for a one unit increase in the explanatory variable, with all other variables held fixed (this indicates that we've accounted for those variables being in the model).
+
+Coefficients of categorical explanatory variables are the difference in average response between the level of the indicator variable and the reference level, holding all other variables constant. 
+
+## Prediction
+
+Just as with simple linear regression, we can use the `augment()` function to help us find predicted values.
+
+To find the predicted responses for all the data used to fit this model:
+
+```{r}
+augment(lm_twovars)
+```
+
+This now includes all the variables from the orginal dataset, plus the "augmented" variables: 
+
+```{r}
+augment(lm_twovars, data = mpg)
+```
+
+And, we can predict new or future values. REMINDER: se sure the variables are named EXACTLY as the variable name appears in the original dataset, and categorical/factor variables need to have their values in quotes.
+
+```{r}
+augment(lm_twovars, 
+        newdata = tibble(displ = c(3, 3.5, 4.0, 4.5, 5.0, 5.5),
+                         drv = c("4", "f", "r", "r", "4", "f")))
+```
+
+We can also plot the fitted "line" on top of the original data. You can't always plot more compled models because at some point there are too many dimensions. **What is special about this model?**
+
+```{r}
+augment(lm_twovars, data = mpg) %>% 
+  ggplot() +
+  geom_jitter(aes(x = displ, y = hwy, color = drv)) + 
+  geom_line(aes(x = displ, y = .fitted, color = drv)) + #the fitted lines
+  labs(x = "Engine Displacement", y = "Highway MPG") +
+  theme_minimal()
+```
+
+
+## Your turn!
 
 
 # Comparing models using basic model selection techniques
+
+
