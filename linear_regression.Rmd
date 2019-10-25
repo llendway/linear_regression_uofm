@@ -598,4 +598,32 @@ augment(lm_twovars, data = mpg) %>%
 
 # Comparing models using basic model selection techniques
 
+You now have the power to add additional predictors to your model. However, with great power comes great responsibility. Be wise and carefully consider whether to add more predictors to your model.  
+
+![Remember this lesson from Jurassic Park.](jeffg.jpg)
+
+
+To understand this, let's step away from regression and think about a remote control for a television. When I was a kid, television remotes were simple: we had the power button, two volume buttons, and ten buttons for changing the station. As I grew up,  televisions' capabilities quickly expanded. In order to actually use the fancy TVs, remote controls became much more complicated. That is, the number of buttons on the remote drastically increased. I studied too hard in college to have time for TV. By the time I entered graduate school remote controls suddenly looked like this:
+
+![Brain overload.](remotecontrol.jpg)
+
+So many buttons! I didn't know how to make a TV work! I felt kind of stupid. I was probably smart enough to figure it out, but I didn't care enough to waste my time trying. 
+
+Our most recent TV came with a simple remote that looks like this:
+
+
+![I would rather use this remote.](roku.jpg)
+Why is the simple remote better for me? Because it gets the job done and doesn't overcomplicate things. 
+
+Similarly, you want to be sure to not overcomplicate your model. If you add a predictor to your model and your model barely improves, you should reconsider and pare down your model. Do not include all the predictors that you have on hand. Everything-bagels are delicious, but everything-regression-models are less tempting.
+
+![This is my face when you overfit the model.](michaelscottoverfit.jpg)
+
+When too many predictors have been incorporated into a regression equation, we say that the model has been "overfit." This means that the model has been tailored to resemble the data-set. What's wrong with this? We don't know that the model represents reality anymore.
+
+Additionally, it's a lot easier to talk about and work with simpler models. If a simpler model will suffice, then keep it simple.
+
+![Be like IKEA furniture: keep it simple, stupid.](KISS.jpg)
+
+
 
