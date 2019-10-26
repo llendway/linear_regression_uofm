@@ -8,7 +8,7 @@ output:
     keep_md: true
     toc: true
     toc_float: true
-    toc_depth: 1
+    toc_depth: 2
 ---
 
 ```{r setup, include=FALSE}
@@ -437,10 +437,43 @@ The other coefficients are the difference in average response between the level 
 ### Your turn!
 
 
-# Hypothesis test for SLR
+# Hypothesis Tests for SLR
+Congratulations! You have learned how to construct regression models. Now ponder these very similar  questions: 
 
+1. Is your regression equation any good? 
 
-# Multiple Linear Regression: Creating models, interpreting models, point prediction
+3. Is the predictor doing a good job of explaining/predicting the response variable?
+
+3. The response variable has variability. Is a meaningful amount of that variability controlled by the predictor?
+
+To answer these questions, we turn to hypothesis tests.
+
+## Constructing Hypotheses
+
+ The hypothesis testing framework requires two hypotheses: a null hypothesis (usually denoted $H_0$) and an alternative hypothesis (usually denoted $H_A$). We assume the null hypothesis until/unless we have sufficient evidence to reject it in favor of the alternative hypothesis. 
+
+In the context of the simple linear regression model, we assume that the two variables have no linear relationship. We then use our data to measure the evidence of the linear relationship. If we have enough evidence, we can say that the two variables have a significant linear relationship.
+
+Writing the null and alternative hypotheses out in sentences is a bit time-consuming, so researchers usually write the hypotheses as equations. To do this, we need some notation. Let's call the predictor $x$ and the response variable $y$. Define $\beta_0$ to be the intercept and $\beta_1$ to be the slope. Then our predicted value of y is 
+$$
+\hat{y} = {\beta}_0 + {\beta}_1 x ,
+$$
+
+With this setup, we can now translate the  null hypothesis ("there is no linear relationship between x and y") to $H_0: \beta_1 = 0$. This means that our regression equation is $\hat{y} = {\beta}_0 + 0 x = \beta_1$; plug in any x value, and the regression equation will produce the same prediction.
+
+The alternative hypothesis is that x and y do have a linear relationship, so the alternative hypothesis is $H_A: \beta_1 \neq 0$.
+
+Putting these hypotheses together, we have:
+
+$$H_0: \beta_1 = 0$$
+
+$$H_A: \beta_1 \neq 0$$
+
+## Measuring Evidence Against the Null Hypothesis
+
+Now that our hypotheses are ready, we are prepared to gather evidence against the null hypothesis.
+
+# Multiple Linear Regression: Creating Models, Interpreting Models, Point Prediction
 
 Often, we think more than one variable affects the response. We can include more than one variable in our model. We do that here, using both *drv* and *displ* to explain *hwy*. 
 
@@ -598,9 +631,11 @@ augment(lm_twovars, data = mpg) %>%
 
 # Comparing models using basic model selection techniques
 
-You now have the power to add additional predictors to your model. However, with great power comes great responsibility. Be wise and carefully consider whether to add more predictors to your model.  
+## Bigger is not necessarily better
 
-![Remember this lesson from Jurassic Park.](jeffg.jpg)
+You now have the power to add additional predictors to your model. However, with great power comes great responsibility. Be wise and judiciously add more predictors to your model.  
+
+![Remember this lesson from Jurassic Park.](jurassicpark.png)
 
 
 To understand this, let's step away from regression and think about a remote control for a television. When I was a kid, television remotes were simple: we had the power button, two volume buttons, and ten buttons for changing the station. As I grew up,  televisions' capabilities quickly expanded. In order to actually use the fancy TVs, remote controls became much more complicated. That is, the number of buttons on the remote drastically increased. I studied too hard in college to have time for TV. By the time I entered graduate school remote controls suddenly looked like this:
@@ -613,6 +648,7 @@ Our most recent TV came with a simple remote that looks like this:
 
 
 ![I would rather use this remote.](roku.jpg)
+
 Why is the simple remote better for me? Because it gets the job done and doesn't overcomplicate things. 
 
 Similarly, you want to be sure to not overcomplicate your model. If you add a predictor to your model and your model barely improves, you should reconsider and pare down your model. Do not include all the predictors that you have on hand. Everything-bagels are delicious, but everything-regression-models are less tempting.
@@ -625,5 +661,7 @@ Additionally, it's a lot easier to talk about and work with simpler models. If a
 
 ![Be like IKEA furniture: keep it simple, stupid.](KISS.jpg)
 
+## How to keep it simple
 
+Now that you understand the importance of controlling model complexity, we can discuss how to adhere to the KISS principle in practice.
 
