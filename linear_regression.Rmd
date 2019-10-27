@@ -438,23 +438,32 @@ The other coefficients are the difference in average response between the level 
 
 
 # Hypothesis Tests for SLR
-Congratulations! You have learned how to construct regression models. Now ponder these very similar  questions: 
+Congratulations! You have learned how to construct regression models.
+
+Earlier, you constructed a linear model for predicting a car's highway gas mileage (miles driven on the highway per gallon of gas used) based on the car's engine displacement, in liters. Let's ponder these very similar questions: 
 
 1. Is your regression equation any good? 
 
-3. Is the predictor doing a good job of explaining/predicting the response variable?
+3. Is engine displacement doing a good job of explaining/predicting the car's highway gas mileage?
 
-3. The response variable has variability. Is a meaningful amount of that variability controlled by the predictor?
+3. Cars' highway gas mileage varies from car to car. Is a meaningful amount of that variability explained by a car's engine displacement?
 
 To answer these questions, we turn to hypothesis tests.
 
+
+
 ## Constructing Hypotheses
 
- The hypothesis testing framework requires two hypotheses: a null hypothesis (usually denoted $H_0$) and an alternative hypothesis (usually denoted $H_A$). We assume the null hypothesis until/unless we have sufficient evidence to reject it in favor of the alternative hypothesis. 
 
-In the context of the simple linear regression model, we assume that the two variables have no linear relationship. We then use our data to measure the evidence of the linear relationship. If we have enough evidence, we can say that the two variables have a significant linear relationship.
 
-Writing the null and alternative hypotheses out in sentences is a bit time-consuming, so researchers usually write the hypotheses as equations. To do this, we need some notation. Let's call the predictor $x$ and the response variable $y$. Define $\beta_0$ to be the intercept and $\beta_1$ to be the slope. Then our predicted value of y is 
+
+A good scientist/researcher is skeptical of claims until they see solid evidence. If a person claims that two variables (such as engine displacement and highway gas mileage) have a relationship, a good researcher will need to see evidence before accepting a claim as true.
+
+This is the basic framework for hypothesis testing. The hypothesis testing framework generally has two hypotheses: a null hypothesis (usually denoted $H_0$) and an alternative hypothesis (usually denoted $H_A$). We assume the null hypothesis until/unless we have sufficient evidence to reject it in favor of the alternative hypothesis. 
+
+In the context of the simple linear regression model, **we assume that the two variables have no linear relationship. We then use our data to measure the evidence of the linear relationship.** If we have enough evidence, we can say that the two variables have a significant linear relationship.
+
+Writing the null and alternative hypotheses  in sentences is a bit verbose, so researchers usually write the hypotheses as equations. To do this, we need to define some notation. Let's call the predictor $x$ and the response variable $y$. Define $\beta_0$ to be the intercept and $\beta_1$ to be the slope. Then our predicted value of y is 
 $$
 \hat{y} = {\beta}_0 + {\beta}_1 x ,
 $$
@@ -469,9 +478,157 @@ $$H_0: \beta_1 = 0$$
 
 $$H_A: \beta_1 \neq 0$$
 
+Let's return to the model for predicting a car's highway mileage based on the car's engine displacement. Our model is:
+
+$$ \widehat{mpg} = \beta_0 + \beta_1 displ. $$
+
+Our null hypothesis is that the car's highway mileage **does not have** a linear relationship with the car's engine displacement; that is $H_0: \beta_1 = 0$. The alternative hypothesis is that these that the car's highway mileage **does have** linear relationship with the car's engine displacement; that is $H_A: \beta_1 \neq 0$. Until we have evidence that shows a linear relationship between the two variables, we assume that there is no linear relationship (that is, we assume that $\beta_1 = 0$.)
+
+
+## Gaining Intuition
+
+
+To better understand the hypotheses and to get a feel for whether the slope is likely to be nonzero, we revisit our plots:
+
+```{r}
+augment(lm_displ, data = mpg) %>% 
+  ggplot() +
+  geom_jitter(aes(x = displ, y = hwy)) + 
+  geom_line(aes(x = displ, y = .fitted), color = "blue") + 
+  labs(x = "Engine Displacement", y = "Highway MPG") +
+  theme_minimal()
+```
+
+This step is important. In a couple minutes, you will learn to crunch numbers. However, **you are more than a number cruncher**. You are a human and you need to know whether the results the computer gives you make sense.
+
+
+
 ## Measuring Evidence Against the Null Hypothesis
 
-Now that our hypotheses are ready, we are prepared to gather evidence against the null hypothesis.
+Now that have a feel for our data, we are prepared to gather evidence against the null hypothesis. 
+We use p-values to measure evidence against the null hypothesis.
+**A smaller p-value provides more evidence against the null hypothesis.** 
+
+Once you have constructed your model, calculating a p-value is easy: simply use the **tidy* command, as the relevant p-values are displayed in the last column of our table. 
+
+```{r}
+tidy(lm_displ)
+```
+
+Our tidy table has two rows: the first row contains information for $\beta_0$ and the second row contains information for $\beta_1$. Because we are testing whether $\beta_1=0$, we select the p-value from the second row: `r 2.038974e-46` (that is `r format(tidy(lm_displ)$p.value[2], scientific = FALSE)`).
+
+
+This is quite a small number, so we have a lot of evidence against the null hypothesis (that there is no linear relationship between highway gas mileage and engine displacement). In a moment, we will decide whether to reject the null hypothesis or not.
+
+
+## Deciding Whether to Reject 
+
+We said that smaller p-values provide more evidence against the null hypothesis. To decide how much evidence is enough to reject the null hypothesis, we need a threshold.
+Before crunching any numbers, an ethical researcher will select their threshold for how small is small enough to reject the null hypothesis. This threshold is called the significance level. Common thresholds include $.05, .01,$ and $.1$. For today, let's use a significance level of $.05$. In the future, you should check within your discipline and consult a statistician to select a smart significance level for your study. 
+
+
+**If your p-value is smaller than your significance level, reject the null hypothesis in favor of the alternative: you have found a significant linear relationship between the two variables.** **If your p-value is larger than your significance level, do not reject the null hypothesis: there is not a significant linear relationship between the two variables.**
+
+Since our p-value is much smaller than today's significance level of $.05$, we reject the null hypothesis in favor of the alternative. **There is a significance linear relationship between a car's engine displacement and its highway gas mileage.**
+
+**Always conclude in the context of your study.** Rather than saying  "We reject the null hypothesis" or "$\beta_1 \neq 0$, write a sentence in plain English (or your language of choice), such as "There is a significance linear relationship between a car's engine displacement and its highway gas mileage."
+
+## Your Turn
+
+1. Test whether the highway gas mileage has a linear relationship with the year of manufacture. More specifically, use highway gas mileage as the predictor and use year  as the response.
+
+2. Test whether the city gas mileage has a linear relationship with the engine displacement. Use city gas mileage as the response.
+
+## Interpreting Tests
+
+### Is this a good predictor?
+
+To motivate hypothesis testing, I asked you some questions:
+
+1. Is your regression equation any good? 
+
+3. Is your predictor doing a good job of explaining/predicting the car's highway gas mileage?
+
+3. Cars' highway gas mileage varies from car to car. Is a meaningful amount of that variability explained by your predictor?
+
+Since we found a significant linear relationship between engine displacement and highway gas mileage, I would respond to these questions with "Not bad." I can't say our regression model is amazing, but it is definitely better than a model with just an intercept. The predictor (engine displacement) does help to explain the variability in highway gas mileage.
+
+Now, let's turn to your model for highway gas mileage based on the year of manufacture. **Your p-value for testing this linear relationship was quite large**, so you did not find a significant linear relationship between year of manufacture and highway gas mileage. In response to my three questions, I would say:
+
+1. No, this regression equation isn't very good. There's no meaningful linear relationship, so there's no compelling reason to keep this model.
+
+2. No, the year the car was manufactured does not do a good job of predicting the car's highway gas mileage. This is because there's no significant linear relationship between a car's gas mileage and the year the car was manufactured.
+
+3. Cars' highway gas mileage varies from car to car. The year the car was made does not do a good job of explaining this variability. This is because there's no significant linear relationship between a car's gas mileage and the year the car was manufactured.
+
+This model is no better than a model with just an intercept ($\widehat{hwy} = \beta_0$). Don't waste your time with this model. Go out and find a better predictor.
+
+### Conclusions
+A hypothesis test can result in one of two conclusions:
+
+1. The two variables have a significant linear relationship.
+2. The two variables do not have a significant linear relationship.
+
+The latter conclusion can arise for a few reasons:
+
+1. There truly is no linear relationship between the two variables.
+2. There is actually a linear relationship between the two variables, but the evidence was not strong enough to detect the relationship. Perhaps a larger sample size would have allowed us to detect the relationship.
+
+
+
+## Turning Your Skills Up
+
+### A New Option
+
+Another way you can calculate p-values is by creating two linear models: one is constructed under the null hypothesis ($\beta_1=0$, meaning $\hat{y} = \beta_0$) and the other is constructed under the alternative hypothesis ($\beta_1 \neq 0$, meaning $\hat{y} = \beta_0+ \beta_1 x$).
+
+Let's revisit the model for predicting highway gas mileage based on engine displacement. To test whether highway gas mileage has a linear relationship with engine displacement, we will create two linear models: one **without** engine displacement as a predictor (this model is built under the null hypothesis) and one **with** engine displacement as a predictor (this model is built under the alternative hypothesis). You have already constructed the latter model, but here it is again. This time, I changed the name to emphasize it is the model built under the alternative hypothesis.
+
+```{r}
+lm_alt <- lm(hwy ~ displ, data = mpg)
+```
+
+
+
+The model built under the null hypothesis is constructed using a 1 (one). This tells R that we want only an intercept ($\beta_0$).
+```{r}
+lm_null <- lm(hwy ~ 1, data = mpg)
+```
+
+
+Now that the models are ready, we can calculate our p-value with the **anova** function:
+
+```{r}
+anova(lm_null, lm_alt)
+```
+
+This tells us our p-value is smaller than $2.2 \times 10^{-16}$. (Often, p-values smaller than $2.2 \times 10^{-16}$ are stated in this way since the p-value is already incredibly small.) This lines up with the p-value we found using the **tidy** table.
+
+### This Option's Utility
+
+A nice thing about conducting hypothesis tests in this way is that we can test whether a **categorical** predictor has a relationship with a quantitative response.  Let's revisit your model for highway gas mileage based on whether the car has front-wheel drive, rear-wheel drive, or four-wheel drive. Recall that this model essentially produces group-wise means. **Does highway gas mileage differ between cars with front-wheel drive, rear-wheel drive, and four-wheel drive?** Let's check out our tidy table.
+
+```{r}
+lm_drv <- lm(hwy ~ drv, data=mpg)
+tidy(lm_drv)
+
+```
+This table has three p-values.  Which one would we choose for our test? We'd choose none of these: we want a *single** p-value that tells us whether a model with group-wise means is better than a model with a single mean.  (We created the single-mean model earlier and called it lm_null.) To find this single p-value, use anova.
+
+```{r}
+anova(lm_drv, lm_null)
+```
+
+Et voila! Our p-value is smaller than $2.2 \times 10^{-16}$, which is smaller than today's significance level of $.05$.  We reject the null hypothesis in favor of the alternative hypothesis. The group-wise means model is significantly better than the model with a single mean. In other words, rather than using a model that produces the same predicted highway gas mileage for all cars, it is better to use a model that predicts differently for front-wheel drive, rear-wheel drive, and four-wheel drive.
+
+
+
+## Your Turn Again
+
+
+1. Using the anova function, test whether the highway gas mileage has a linear relationship with the year of manufacture. More specifically, use highway gas mileage as the predictor and use year  as the response.
+
+2. Using the anova function, test whether the city gas mileage differs between front-wheel drive, rear-wheel drive, and four-wheel drive cars. 
 
 # Multiple Linear Regression: Creating Models, Interpreting Models, Point Prediction
 
