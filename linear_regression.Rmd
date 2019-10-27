@@ -229,6 +229,13 @@ ggplot(data = mpg) +
 
 ### Your turn! 
 
+
+\
+\
+\
+\
+\
+
 # Simple Linear Regression (SLR): Creating models, interpreting models, point prediction
 
 We are going to discuss different types of linear models, their notation in R, how to interpret the model coefficients, and how to use them for prediction.
@@ -437,6 +444,18 @@ The other coefficients are the difference in average response between the level 
 ### Your turn!
 
 
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
 # Hypothesis Tests for SLR
 Congratulations! You have learned how to construct regression models.
 
@@ -539,6 +558,12 @@ Since our p-value is much smaller than today's significance level of $.05$, we r
 
 2. Test whether the city gas mileage has a linear relationship with the engine displacement. Use city gas mileage as the response.
 
+\
+\
+\
+\
+\
+
 ## Interpreting Tests
 
 ### Is this a good predictor?
@@ -629,6 +654,17 @@ Et voila! Our p-value is smaller than $2.2 \times 10^{-16}$, which is smaller th
 1. Using the anova function, test whether the highway gas mileage has a linear relationship with the year of manufacture. More specifically, use highway gas mileage as the predictor and use year  as the response.
 
 2. Using the anova function, test whether the city gas mileage differs between front-wheel drive, rear-wheel drive, and four-wheel drive cars. 
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 
 # Multiple Linear Regression: Creating Models, Interpreting Models, Point Prediction
 
@@ -786,7 +822,15 @@ augment(lm_twovars, data = mpg) %>%
 ## Your turn!
 
 
-# Comparing models using basic model selection techniques
+
+
+\
+\
+\
+\
+
+
+# Comparing Models Using Basic Model Selection Techniques
 
 ## Bigger is not necessarily better
 
@@ -808,17 +852,74 @@ Our most recent TV came with a simple remote that looks like this:
 
 Why is the simple remote better for me? Because it gets the job done and doesn't overcomplicate things. 
 
-Similarly, you want to be sure to not overcomplicate your model. If you add a predictor to your model and your model barely improves, you should reconsider and pare down your model. Do not include all the predictors that you have on hand. Everything-bagels are delicious, but everything-regression-models are less tempting.
+We see a similar lesson here: **do not overcomplicate your model**. If you add a predictor to your model and your model barely improves, what is the utility of your bulked up model? You should reconsider and pare down your model. Do not include all the predictors that you have on hand. Everything-bagels are delicious, but everything-regression-models are less tempting.
 
 ![This is my face when you overfit the model.](michaelscottoverfit.jpg)
 
-When too many predictors have been incorporated into a regression equation, we say that the model has been "overfit." This means that the model has been tailored to resemble the data-set. What's wrong with this? We don't know that the model represents reality anymore.
+What is the issue with incorporating many predictors? Actually, there are two main issues.  
 
-Additionally, it's a lot easier to talk about and work with simpler models. If a simpler model will suffice, then keep it simple.
+First, it's a lot easier to talk about and work with simpler models. Think back to the section on interpreting models. The more predictors you have in your model, the longer and more complicated your interpretation is. If a simpler model will suffice, then keep it simple.
+
+
+Second, there is a danger of "overfitting." When too many predictors have been incorporated into a regression equation, we say that the model has been "overfit." This means that the model has been tailored to resemble the data-set. What's wrong with this? We don't know that the model represents reality anymore.
+
+
 
 ![Be like IKEA furniture: keep it simple, stupid.](KISS.jpg)
 
 ## How to keep it simple
 
-Now that you understand the importance of controlling model complexity, we can discuss how to adhere to the KISS principle in practice.
+Now that you understand the importance of controlling model complexity, we can discuss how to adhere to the KISS principle in practice. **If two models work equally well, but one is simpler, then use the simpler model.** To put this another way, **in order to justify adding a predictor to your model, you must show the bulked-up model works significantly better.** How can you make this decision? Use the p-value from the anova command.
+
+Let's use a concrete example. Recall your model for highway gas mileage based on whether a car has front-wheel, rear-wheel, or four-wheel drive. We may want to improve the predictive capability of this model by taking engine displacement into account. Then, the two models we are comparing are:
+```{r}
+smallmod <- lm(hwy ~ drv, data = mpg)
+bigmod <- lm(hwy ~ drv + displ, data = mpg)
+
+```
+Unless the bigmod is noticeably better than the smallmod, we should use the smallmod in order to keep it simple. Let's use anova to see whether the bigmod is better or whether we should stay with the smallmod.
+```{r}
+anova(bigmod, smallmod)
+```
+
+Our p-value is quite small, so the bigmod works noticeably better. **We can use the model with both drive and displacement, as it is better than the model with drive only.**
+
+## Your Turn
+
+1. Is a model with both drive and displacement better than a model with just an intercept $\beta_0$? Use highway gas mileage as the response variable. 
+
+2. If we already have drive and displacement in the model, should we add the type of transmission? (Hint: the two models to compare will differ by a single variable.)
+
+3. Consider adding to the model that "won" in question 2. Should we stick with this model, or could we justify adding the "type" of car (class)?
+
+## Another Approach
+
+Using anova (as you just practiced) works well when you can use it. I didn't tell you this before, but you can use the anova command to decide whether to add/remove predictors. That is, the predictors in one model must ALL be used in the other model. (We call such models "nested models.")
+
+You can't (shouldn't) use anova to compare, for example, the following two models: 
+```{r}
+mod1 <- lm(hwy ~ class, data = mpg)
+mod2 <- lm(hwy ~ trans, data = mpg)
+```
+Why? The first model does not use all the predictors from the second model. Similarly, the second model does not use all the predictors from the first model.
+
+To compare non-nested models, we can use AIC (Akaike Information Criteria). AIC rewards model fit and penalizes for model complexity. **For AIC, smaller is better.** If two models have AICs within 5 or 10 of each other, than you can make a call on which model you'd like to use. Often the context of your research will help you make this decision.
+
+Let's find the AIC for each model.
+```{r}
+AIC(mod1)
+AIC(mod2)
+```
+
+The AIC on mod1 is much smaller, which means that we should use mod1. Rather than using a model with a car's transmission, it is better to use a model with the car's class.
+
+## Your Turn
+
+Create models with highway gas mileage as the response. 
+
+1. Use AIC to decide which model to use: a model with transmission only or a model with year of manufacture only.
+
+2. Use AIC to decide which model to use: a model with transmission only or a model with transmission, class, fuel type, and city miles per gallon.
+
+3. Create the best model possible, with the restriction that you can use only a single predictor.
 
