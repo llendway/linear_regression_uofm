@@ -832,7 +832,7 @@ augment(lm_twovars, data = mpg) %>%
 
 # Comparing Models Using Basic Model Selection Techniques
 
-## Bigger is not necessarily better
+## Bigger is Not Necessarily Better
 
 You now have the power to add additional predictors to your model. However, with great power comes great responsibility. Be wise and judiciously add more predictors to your model.  
 
@@ -865,9 +865,9 @@ Second, there is a danger of "overfitting." When too many predictors have been i
 
 
 
-![Be like IKEA furniture: keep it simple, stupid.](KISS.jpg)
+![Lizzo absolutely agrees.](KISS.jpg)
 
-## How to keep it simple
+## How to Keep it Simple
 
 Now that you understand the importance of controlling model complexity, we can discuss how to adhere to the KISS principle in practice. **If two models work equally well, but one is simpler, then use the simpler model.** To put this another way, **in order to justify adding a predictor to your model, you must show the bulked-up model works significantly better.** How can you make this decision? Use the p-value from the anova command.
 
