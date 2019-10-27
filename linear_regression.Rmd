@@ -839,13 +839,11 @@ You now have the power to add additional predictors to your model. However, with
 ![Remember this lesson from Jurassic Park.](jurassicpark.png)
 
 
-To understand this, let's step away from regression and think about a remote control for a television. When I was a kid, television remotes were simple: we had the power button, two volume buttons, and ten buttons for changing the station. As I grew up,  televisions' capabilities quickly expanded. In order to actually use the fancy TVs, remote controls became much more complicated. That is, the number of buttons on the remote drastically increased. I studied too hard in college to have time for TV. By the time I entered graduate school remote controls suddenly looked like this:
+To understand this, let's step away from regression and think about a remote control for a television. Imagine you're a guest in someone's home. Would you rather use a remote control with 100 buttons such as this remote:
 
 ![Brain overload.](remotecontrol.jpg)
 
-So many buttons! I didn't know how to make a TV work! I felt kind of stupid. I was probably smart enough to figure it out, but I didn't care enough to waste my time trying. 
-
-Our most recent TV came with a simple remote that looks like this:
+or a simple remote such as this one:
 
 
 ![I would rather use this remote.](roku.jpg)
