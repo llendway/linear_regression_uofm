@@ -839,20 +839,28 @@ You now have the power to add additional predictors to your model. However, with
 ![Remember this lesson from Jurassic Park.](jurassicpark.png)
 
 
-To understand this, let's step away from regression and think about a remote control for a television. Imagine you're a guest in someone's home. Would you rather use a remote control with 100 buttons such as this remote:
+
+To understand why we need to judiciously add predictors, let's step away from regression and think about a remote control for a television. Imagine you're a guest in someone's home. Would you rather use a remote control with 100 buttons such as this remote:
 
 ![Brain overload.](remotecontrol.jpg)
 
-or a simple remote such as this one:
+
+
+Or would you rather see a simple remote such as this one:
 
 
 ![I would rather use this remote.](roku.jpg)
 
-Why is the simple remote better for me? Because it gets the job done and doesn't overcomplicate things. 
+
+
+Why do I prefer the simple remote? I can do what I need to do. The other remotes are too complicated for me. I don't know how to use them.  
 
 We see a similar lesson here: **do not overcomplicate your model**. If you add a predictor to your model and your model barely improves, what is the utility of your bulked up model? You should reconsider and pare down your model. Do not include all the predictors that you have on hand. Everything-bagels are delicious, but everything-regression-models are less tempting.
 
 ![This is my face when you overfit the model.](michaelscottoverfit.jpg)
+
+\
+\
 
 What is the issue with incorporating many predictors? Actually, there are two main issues.  
 
@@ -864,6 +872,9 @@ Second, there is a danger of "overfitting." When too many predictors have been i
 
 
 ![Lizzo absolutely agrees.](KISS.jpg)
+
+\
+\
 
 ## How to Keep it Simple
 
