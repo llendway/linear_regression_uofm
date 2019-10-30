@@ -101,7 +101,10 @@ mpg %>%
 ```
 
 
-### YOUR TURN (have a problem for them to try on their own)
+### Your turn!
+
+1. Create a plot that shows the distribution of city miles per gallon, *cty*. How would you describe the distribution using words and statistics?  
+2. Create a plot that shows the distribution of engine displacement, *displ*. How would you describe the distribution using words and statistics? 
 
 
 ## Multivariate visualization/summarization
@@ -146,7 +149,10 @@ mpg %>%
 ```
 
 
-### YOUR TURN!!
+### Your turn!
+
+1. Create a scatterplot of *hwy* vs. *cty* miles per gallon. How would you describe the relationship?  
+2. Compute the correlation between *hwy* and *cty*.
 
 ### More complex scatterplots
 
@@ -207,6 +213,10 @@ ggplot(data = mpg) +
   theme_minimal()
 ```
 
+### Your turn!
+
+Create 2-3 more complex plots that examine how some variables we have not investigated yet affect *hwy*. 
+
 ### Quantitative vs. categorical: side-by-side boxplots and density "ridge" plots
 
 Examine the side-by-side boxplot below. What are some observations you would make?
@@ -229,12 +239,8 @@ ggplot(data = mpg) +
 
 ### Your turn! 
 
+Examine the effect of *class* on *hwy*.
 
-\
-\
-\
-\
-\
 
 # Simple Linear Regression (SLR): Creating models, interpreting models, point prediction
 
@@ -345,10 +351,13 @@ How would you find the predicted highway miles per gallon for a vehicle with an 
 
 We can use the `augment()` function to help us do this, too.
 
-We an use it to find the predicted responses for all the data used to fit this model:
+We an use it to find the predicted responses for all the data used to fit this model. Below I just show the first 10 rows.
 
 ```{r}
-augment(lm_displ)
+aug_displ <- augment(lm_displ)
+
+aug_displ %>% 
+  slice(1:10)
 ```
 
 This dataset contains the response variable, all explanatory variables, and some additional information. One piece of additional information is the variable *.fitted*. These are the predicted (fitted) values. 
@@ -356,7 +365,8 @@ This dataset contains the response variable, all explanatory variables, and some
 Sometimes we want all the variables in our original dataset, plus these new variables. We can get that, by adding a `data = ` argument to the `augment()` function. 
 
 ```{r}
-augment(lm_displ, data = mpg)
+augment(lm_displ, data = mpg) %>% 
+  slice(1:10)
 ```
 
 We can also use `augment() ` to predict unknown or future values, like predicting the highway MPG for a displacement of 4.5. We need to add a `newdata = ` argument to the function and give it a dataset as an argument. Because there is just one value, we can create the dataset "on the fly." The `tibble()` function can be used to create a dataset. If we wanted multiple predictions, we separate them with commas inside the `c()`. Be sure the variable is named EXACTLY as the variable name appears in the original dataset.
@@ -381,6 +391,13 @@ augment(lm_displ, data = mpg) %>%
   labs(x = "Engine Displacement", y = "Highway MPG") +
   theme_minimal()
 ```
+
+### Your turn!
+
+1. Fit a model that used *cty* to explain *hwy*. Write down the model equation.  
+2. Interpret the intercept and slope from the model.  
+3. Plot the line on top of a scatterplot of the data.  
+4. Use the model to predict the highway MPG, *hwy*,  for a car that gets 24 MPG in the city and for a car that gets 65 MPG in the city. Do you trust both of these predictions?
 
 ## Linear regression with one categorical (factor) variable
 
@@ -443,8 +460,90 @@ The other coefficients are the difference in average response between the level 
 
 ### Your turn!
 
+1. Create a model that uses *class* to explain *hwy*. Interpret each of the coefficients.  
+2. What is the predicted highway MPG for a pickup?
+
+# Multiple Linear Regression: Creating Models, Interpreting Models, Point Prediction
+
+Often, we think more than one variable affects the response. We can include more than one variable in our model. We do that here, using both *drv* and *displ* to explain *hwy*. 
+
+```{r}
+lm_twovars <- lm(hwy ~ drv + displ,
+                 data=mpg)
+tidy(lm_twovars)
+```
+
+**Questions:**
+
+1. Have the coefficients in the model changed from the model with only *displ* or the model with only *drv*?  
+2. Why do you think they have changed or not changed?
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
+In a model with more than one variable, we are determining the affect of each variable, while accounting for all other variables in the model. This affect might change after accounting for those other variables. Let's examine this visually first with this toy example.
+
+```{r}
+set.seed(10)
+
+x1 <- runif(n = 10, min = 0, max = 10)
+y1 <- 5 + rnorm(n = 10, mean = 0, sd = 2)
+
+x2 <- runif(n = 10, min = 10, max = 20)
+y2 <- 15 + rnorm(n = 10, mean = 0, sd = 2)
+
+x3 <- runif(n = 10, min = 20, max = 30)
+y3 <- 25 + rnorm(n = 10, mean = 0, sd = 2)
+
+test_data <- tibble(x = c(x1, x2, x3),
+                    y = c(y1, y2, y3),
+                    grp = c(rep("a", 10), rep("b", 10), rep("c", 10)))
+
+ggplot(test_data) +
+  geom_point(aes(x = x, y = y, color = grp)) +
+  theme_minimal()
+```
+
+**Questions:**
+
+1. How would you describe the relationship between *x* and *y* if you don't pay attention to *grp*?  
+2. Is the relationship between *x* and *y* within each *grp* different than the overall relationship? What might you expect the coefficient of the *x* term to be in a linear regression that includes both *x* and *grp* in the model of *y*?
 
 
+## Explanation
+
+Let's return to the model output. 
+
+```{r}
+tidy(lm_twovars)
+```
+
+Given what we just discussed, try interpreting each of the estimated coefficients from the model on your own. 
+
 \
 \
 \
@@ -455,6 +554,78 @@ The other coefficients are the difference in average response between the level 
 \
 \
 \
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
+In general, in a multiple linear regression model, the intercept is the *average* response when the explanatory variables are all equal to zero. If there are categorical variables in the model, the intercept then reflects when all of those are at the baseline/reference level. 
+
+Coefficients of quantitative explanatory variables are the *average* change in the response variable for a one unit increase in the explanatory variable, with all other variables held fixed (this indicates that we've accounted for those variables being in the model).
+
+Coefficients of categorical explanatory variables are the difference in average response between the level of the indicator variable and the reference level, holding all other variables constant. 
+
+## Prediction
+
+Just as with simple linear regression, we can use the `augment()` function to help us find predicted values.
+
+To find the predicted responses for all the data used to fit this model:
+
+```{r}
+augment(lm_twovars) %>% 
+  slice(1:10)
+```
+
+This now includes all the variables from the orginal dataset, plus the "augmented" variables: 
+
+```{r}
+augment(lm_twovars, data = mpg) %>% 
+  slice(1:10)
+```
+
+And, we can predict new or future values. REMINDER: se sure the variables are named EXACTLY as the variable name appears in the original dataset, and categorical/factor variables need to have their values in quotes.
+
+```{r}
+augment(lm_twovars, 
+        newdata = tibble(displ = c(3, 3.5, 4.0, 4.5, 5.0, 5.5),
+                         drv = c("4", "f", "r", "r", "4", "f")))
+```
+
+We can also plot the fitted "line" on top of the original data. You can't always plot more compled models because at some point there are too many dimensions. **What is special about this model?**
+
+```{r}
+augment(lm_twovars, data = mpg) %>% 
+  ggplot() +
+  geom_jitter(aes(x = displ, y = hwy, color = drv)) + 
+  geom_line(aes(x = displ, y = .fitted, color = drv)) + #the fitted lines
+  labs(x = "Engine Displacement", y = "Highway MPG") +
+  theme_minimal()
+```
+
+
+### Your turn!
+
+1. Fit a model that uses *cty* and *class* to predict *hwy*. Write down the model equation and interpret each of the coefficients.  
+2. Make a graph of the model on top of a scatterplot of the data. Color the points by *class* and color the lines by *class*.  
+3. Use the model to find the predicted highway MPG for a compact car that gets 26 MPG in the city.
+
+
+
 
 # Hypothesis Tests for SLR
 Congratulations! You have learned how to construct regression models.
@@ -655,179 +826,6 @@ Et voila! Our p-value is smaller than $2.2 \times 10^{-16}$, which is smaller th
 
 2. Using the anova function, test whether the city gas mileage differs between front-wheel drive, rear-wheel drive, and four-wheel drive cars. 
 
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-
-# Multiple Linear Regression: Creating Models, Interpreting Models, Point Prediction
-
-Often, we think more than one variable affects the response. We can include more than one variable in our model. We do that here, using both *drv* and *displ* to explain *hwy*. 
-
-```{r}
-lm_twovars <- lm(hwy ~ drv + displ,
-                 data=mpg)
-tidy(lm_twovars)
-```
-
-**Questions:**
-
-1. Have the coefficients in the model changed from the model with only *displ* or the model with only *drv*?  
-2. Why do you think they have changed or not changed?
-
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-
-In a model with more than one variable, we are determining the affect of each variable, while accounting for all other variables in the model. This affect might change after accounting for those other variables. Let's examine this visually first with this toy example.
-
-```{r}
-set.seed(10)
-
-x1 <- runif(n = 10, min = 0, max = 10)
-y1 <- 5 + rnorm(n = 10, mean = 0, sd = 2)
-
-x2 <- runif(n = 10, min = 10, max = 20)
-y2 <- 15 + rnorm(n = 10, mean = 0, sd = 2)
-
-x3 <- runif(n = 10, min = 20, max = 30)
-y3 <- 25 + rnorm(n = 10, mean = 0, sd = 2)
-
-test_data <- tibble(x = c(x1, x2, x3),
-                    y = c(y1, y2, y3),
-                    grp = c(rep("a", 10), rep("b", 10), rep("c", 10)))
-
-ggplot(test_data) +
-  geom_point(aes(x = x, y = y, color = grp)) +
-  theme_minimal()
-```
-
-**Questions:**
-
-1. How would you describe the relationship between *x* and *y* if you don't pay attention to *grp*?  
-2. Is the relationship between *x* and *y* within each *grp* different than the overall relationship? What might you expect the coefficient of the *x* term to be in a linear regression that includes both *x* and *grp* in the model of *y*?
-
-
-## Explanation
-
-Let's return to the model output. 
-
-```{r}
-tidy(lm_twovars)
-```
-
-Given what we just discussed, try interpreting each of the estimated coefficients from the model on your own. 
-
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-
-In general, in a multiple linear regression model, the intercept is the *average* response when the explanatory variables are all equal to zero. If there are categorical variables in the model, the intercept then reflects when all of those are at the baseline/reference level. 
-
-Coefficients of quantitative explanatory variables are the *average* change in the response variable for a one unit increase in the explanatory variable, with all other variables held fixed (this indicates that we've accounted for those variables being in the model).
-
-Coefficients of categorical explanatory variables are the difference in average response between the level of the indicator variable and the reference level, holding all other variables constant. 
-
-## Prediction
-
-Just as with simple linear regression, we can use the `augment()` function to help us find predicted values.
-
-To find the predicted responses for all the data used to fit this model:
-
-```{r}
-augment(lm_twovars)
-```
-
-This now includes all the variables from the orginal dataset, plus the "augmented" variables: 
-
-```{r}
-augment(lm_twovars, data = mpg)
-```
-
-And, we can predict new or future values. REMINDER: se sure the variables are named EXACTLY as the variable name appears in the original dataset, and categorical/factor variables need to have their values in quotes.
-
-```{r}
-augment(lm_twovars, 
-        newdata = tibble(displ = c(3, 3.5, 4.0, 4.5, 5.0, 5.5),
-                         drv = c("4", "f", "r", "r", "4", "f")))
-```
-
-We can also plot the fitted "line" on top of the original data. You can't always plot more compled models because at some point there are too many dimensions. **What is special about this model?**
-
-```{r}
-augment(lm_twovars, data = mpg) %>% 
-  ggplot() +
-  geom_jitter(aes(x = displ, y = hwy, color = drv)) + 
-  geom_line(aes(x = displ, y = .fitted, color = drv)) + #the fitted lines
-  labs(x = "Engine Displacement", y = "Highway MPG") +
-  theme_minimal()
-```
-
-
-## Your turn!
-
-
-
-
-\
-\
-\
-\
 
 
 # Comparing Models Using Basic Model Selection Techniques
