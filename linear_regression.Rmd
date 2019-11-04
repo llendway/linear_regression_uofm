@@ -371,13 +371,22 @@ augment(lm_displ, data = mpg) %>%
 
 We can also use `augment() ` to predict unknown or future values, like predicting the highway MPG for a displacement of 4.5. We need to add a `newdata = ` argument to the function and give it a dataset as an argument. Because there is just one value, we can create the dataset "on the fly." The `tibble()` function can be used to create a dataset. If we wanted multiple predictions, we separate them with commas inside the `c()`. Be sure the variable is named EXACTLY as the variable name appears in the original dataset.
 
-```{r}
+```{r, message=TRUE, warning=TRUE}
 augment(lm_displ, 
         newdata = tibble(displ = c(4.5)))
 
 #example of more than one prediction
 augment(lm_displ, 
         newdata = tibble(displ = c(3, 3.5, 4.0, 4.5, 5.0, 5.5)))
+
+#OR
+
+my_new_data <- tibble(displacement = c(3, 3.5, 4.0, 4.5, 5.0, 5.5),
+                      garbage = c(1,2,3,4,5,6))
+
+augment(lm_displ, 
+        newdata = my_new_data)
+
 ```
 
 We can also use this to plot our fitted line on the plot of the original data.
